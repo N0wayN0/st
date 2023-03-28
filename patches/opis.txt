@@ -1,0 +1,7 @@
+
+dodalem je w kolejnosci w jakiej sa ponumerowane
+alpha jest do przezroczystosci terminala
+font2 zeby bylo alternatywne fonty
+swapmouse zeby pokazywal kursor w programach jak ranger
+scroll jest do przewijania
+w 5 pathu zamienilem ShiftMask na 0 i ,ozna przewijak tylko kulkiem
