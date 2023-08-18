@@ -5,14 +5,10 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Liberation Mono:pixelsize=17:antialias=true:autohint=true";
+//static char *font = "Liberation Mono:size=17";
+static char *font = "monospace:size=16:pixelsize=16";
 /* Spare fonts */
-static char *font2[] = { "Noto Color Emoji:pixelsize=12:antialias=true:autohint=true", 
- 	"Ubuntu Nerd Font:size=19",
-	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", 
-	"NotoColorEmoji:pixelsize=12:antialias=true:autohint=true", 
-	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true" 
-};
+static char *font2[] = { };
 
 static int borderpx = 2;
 

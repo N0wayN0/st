@@ -1,0 +1,41 @@
+
+
+zeby zrobic kolorowe emoji znalazlem tutaj
+https://www.maximilian-schillinger.de/articles/st-libxft-bgra-patch.html
+
+1. sciagnac to:
+git clone https://gitlab.freedesktop.org/xorg/lib/libxft.git
+cd libxft
+
+2. zrobilem checkout do 2.3.5 jak jest tam napisane 
+git checkout libXft-2.3.7
+
+3. trzeba zainstalowac cala reste
+apt install build-essential libtool pkg-config libxrender-dev libfreetype6-dev libfontconfig1-dev xutils-dev
+is skompilowac
+sh autogen.sh --sysconfdir=/etc --prefix=/usr --mandir=/usr/share/man
+make
+
+4. pozniej zmienic w pliku config.mk  To jest na tej stronie
+
+-X11INC = /usr/X11R6/include
+-X11LIB = /usr/X11R6/lib
++X11INC = $(HOME)/libxft/include    <- zeby korzystal z mojego spatchowanego
++X11LIB = $(HOME)/libxft/src/.libs
+
+-STLDFLAGS = $(LIBS) $(LDFLAGS)
++STLDFLAGS = -Xlinker -rpath=$(X11LIB) $(LIBS) $(LDFLAGS)
+
+a potem skompilowac st
+i mozna sprawdzic z jakiej blilioteki korzysta teraz
+ldd ./st
+  linux-vdso.so.1 (0x00007fffc413f000)
+  libX11.so.6 => /lib/x86_64-linux-gnu/libX11.so.6 (0x00007f98204b1000)
+  libutil.so.1 => /lib/x86_64-linux-gnu/libutil.so.1 (0x00007f98204ac000)
+>  libXft.so.2 => /home/max/libxft/src/.libs/libXft.so.2 (0x00007f9820492000)
+
+I co dziwne trzeba w pliku config.h w st usunac wszystkie fonty tylko zostawic jeden podstawowy
+monospace albo liberation a emoji sam sobie znajdzie i wyswietli
+i musi byc tak: static char *font = "monospace:size=17:pixelsize=22"
+ bez pixelsize wyswietla mniej kolowowych ikonek np speaker
+
