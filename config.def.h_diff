@@ -5,10 +5,15 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-//static char *font = "Liberation Mono:size=17";
-static char *font = "monospace:size=16:pixelsize=16";
+static char *font = "Liberation Mono:pixelsize=17:antialias=true:autohint=true";
 /* Spare fonts */
-static char *font2[] = { };
+/* static char *font2[] = { "Noto Color Emoji:pixelsize=12:antialias=true:autohint=true", 
+ *	"Ubuntu Nerd Font:size=19",
+ *	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", 
+ *	"NotoColorEmoji:pixelsize=12:antialias=true:autohint=true", 
+ *	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true" 
+*};
+*/
 
 static int borderpx = 2;
 
@@ -210,8 +215,8 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-	{ 0,                    XK_Page_Up,     kscrollup,      {.i =  2} },
-	{ 0,                    XK_Page_Down,   kscrolldown,    {.i =  2} },
+	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 };
 
 /*
@@ -357,7 +362,7 @@ static Key key[] = {
 	{ XK_Delete,        ControlMask,    "\033[3;5~",    +1,    0},
 	{ XK_Delete,        ShiftMask,      "\033[2K",      -1,    0},
 	{ XK_Delete,        ShiftMask,      "\033[3;2~",    +1,    0},
-	{ XK_Delete,        XK_ANY_MOD,     "\033[3~",      -1,    0},
+	{ XK_Delete,        XK_ANY_MOD,     "\033[P",       -1,    0},
 	{ XK_Delete,        XK_ANY_MOD,     "\033[3~",      +1,    0},
 	{ XK_BackSpace,     XK_NO_MOD,      "\177",          0,    0},
 	{ XK_BackSpace,     Mod1Mask,       "\033\177",      0,    0},
