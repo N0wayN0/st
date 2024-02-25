@@ -5,6 +5,7 @@
 #include <locale.h>
 #include <signal.h>
 #include <sys/select.h>
+#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
 #include <libgen.h>
@@ -721,6 +722,8 @@ brelease(XEvent *e)
 		return;
 	if (btn == Button1)
 		mousesel(e, 1);
+    else if (btn == Button3)
+        selacction();
 }
 
 void
@@ -2226,4 +2229,26 @@ run:
 	run();
 
 	return 0;
+}
+
+void
+selacction()
+{
+    char * const clip = xsel.primary;
+    if(!clip) {
+		//fprintf(stderr, "Warning: nothing selected\n");
+		return;
+	}
+	
+    char *plumber[] = {rmb, clip, NULL};
+    // i can add cwd as well
+	pid_t chpid;
+
+	if ((chpid = fork()) == 0) {
+		if (fork() == 0)
+			execvp(plumber[0], plumber);
+		exit(1);
+	}
+	if (chpid > 0)
+		waitpid(chpid, NULL, 0);
 }

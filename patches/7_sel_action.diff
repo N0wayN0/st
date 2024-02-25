@@ -1,0 +1,118 @@
+diff --git a/config.def.h b/config.def.h
+index 541f807..d204755 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -10,6 +10,7 @@ static char *font = "monospace:size=16:pixelsize=16";
+ /* Spare fonts */
+ static char *font2[] = { };
+ 
++static char *rmb = "xdg-open"; //action on right mouse buttoon
+ static int borderpx = 2;
+ 
+ /*
+@@ -183,8 +184,8 @@ static uint forcemousemod = ShiftMask;
+  */
+ static MouseShortcut mshortcuts[] = {
+ 	/* mask                 button   function        argument       release */
+-	{ 0,            Button4, kscrollup,      {.i = 1} },
+-	{ 0,            Button5, kscrolldown,    {.i = 1} },
++	{ 0,                    Button4, kscrollup,      {.i = 1} },
++	{ 0,                    Button5, kscrolldown,    {.i = 1} },
+ 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
+ 	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
+ 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
+diff --git a/config.h b/config.h
+index 541f807..d5240c2 100644
+--- a/config.h
++++ b/config.h
+@@ -10,6 +10,7 @@ static char *font = "monospace:size=16:pixelsize=16";
+ /* Spare fonts */
+ static char *font2[] = { };
+ 
++static char *rmb = "xdg-open"; //action on right muse buttoon
+ static int borderpx = 2;
+ 
+ /*
+@@ -183,8 +184,8 @@ static uint forcemousemod = ShiftMask;
+  */
+ static MouseShortcut mshortcuts[] = {
+ 	/* mask                 button   function        argument       release */
+-	{ 0,            Button4, kscrollup,      {.i = 1} },
+-	{ 0,            Button5, kscrolldown,    {.i = 1} },
++	{ 0,                    Button4, kscrollup,      {.i = 1} },
++	{ 0,                    Button5, kscrolldown,    {.i = 1} },
+ 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
+ 	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
+ 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
+diff --git a/st.c b/st.c
+index c44797b..92b2d4c 100644
+--- a/st.c
++++ b/st.c
+@@ -819,7 +819,7 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
+ 		break;
+ 	default:
+ #ifdef __OpenBSD__
+-		if (pledge("stdio rpath tty proc", NULL) == -1)
++		if (pledge("stdio rpath tty proc exec", NULL) == -1)
+ 			die("pledge\n");
+ #endif
+ 		close(s);
+diff --git a/st.h b/st.h
+index 073851a..03f9faa 100644
+--- a/st.h
++++ b/st.h
+@@ -82,6 +82,7 @@ void die(const char *, ...);
+ void redraw(void);
+ void draw(void);
+ 
++void selacction();
+ void printscreen(const Arg *);
+ void printsel(const Arg *);
+ void sendbreak(const Arg *);
+diff --git a/x.c b/x.c
+index 1fa2711..1ff70a0 100644
+--- a/x.c
++++ b/x.c
+@@ -5,6 +5,7 @@
+ #include <locale.h>
+ #include <signal.h>
+ #include <sys/select.h>
++#include <sys/wait.h>
+ #include <time.h>
+ #include <unistd.h>
+ #include <libgen.h>
+@@ -721,6 +722,8 @@ brelease(XEvent *e)
+ 		return;
+ 	if (btn == Button1)
+ 		mousesel(e, 1);
++    else if (btn == Button3)
++        selacction();
+ }
+ 
+ void
+@@ -2227,3 +2230,25 @@ run:
+ 
+ 	return 0;
+ }
++
++void
++selacction()
++{
++    char * const clip = xsel.primary;
++    if(!clip) {
++		//fprintf(stderr, "Warning: nothing selected\n");
++		return;
++	}
++	
++    char *plumber[] = {rmb, clip, NULL};
++    // i can add cwd as well
++	pid_t chpid;
++
++	if ((chpid = fork()) == 0) {
++		if (fork() == 0)
++			execvp(plumber[0], plumber);
++		exit(1);
++	}
++	if (chpid > 0)
++		waitpid(chpid, NULL, 0);
++}
